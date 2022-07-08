@@ -1,5 +1,5 @@
 # GitHub Action: eic/run-cvmfs-osg-eic-shell
-![linux](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/linux/badge.svg)![macOS](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/macOS/badge.svg)![dev](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/dev/badge.svg)[![coverity](https://github.com/eic/run-cvmfs-osg-eic-shell/actions/workflows/coverity.yml/badge.svg)](https://github.com/eic/run-cvmfs-osg-eic-shell/actions/workflows/coverity.yml)
+![linux](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/linux/badge.svg)![macOS](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/macOS/badge.svg)![dev](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/dev/badge.svg)
 
 This GitHub Action executes user payload code inside a LCG view environment, specified by the user.
 
@@ -83,58 +83,3 @@ There are minimal examples, which are also workflows in this repository in the s
 ## Limitations
 
 The action will always resolve the correct image to execute your code on top the requested view, therefore you must always set the top level GitHub Action variable `runs-on: ubuntu-latest`. However this is not the case if you want to execute on macOS, there you have to set this variable to `runs-on: macos-latest`.
-
-## Coverity Scan extension
-### Prerequisites
-It is also possible to automatize [Coverity Scan](https://scan.coverity.com/) with this action. There are several steps that you need to do before being able to use this specific feature of this action:
- - Register you Open Source Project with [Coverity Scan](https://scan.coverity.com/)
- - Create a private Github Container Registry image with the Coverity Scan binaries (see [Dockerfile](https://github.com/AIDASoft/management/blob/master/coverity/Dockerfile) and [workflow](https://github.com/AIDASoft/management/blob/master/.github/workflows/images-creator.yml#L46)) embedded within. This will remove the need to always download the binary for each scan
- - Create a [Personal Access Token](https://github.com/settings/tokens) to be able to access the private image (add this variable as a secret)
- - Add to the project secrets the Coverity Scan token from your project
-
-### Example
-You can use this feature from this GitHub Action in a workflow in your own repository with `uses: eic/run-cvmfs-osg-eic-shell@v3`.
-```yaml
-jobs:
-  run-coverity:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: eic/run-cvmfs-osg-eic-shell@v3
-      with:
-        coverity-container: 'ghcr.io/aidasoft/coverity:latest'
-        coverity-cmake-command: 'cmake -DCMAKE_CXX_STANDARD=17 ..'
-        coverity-project: 'AIDASoft%2Fpodio'
-        coverity-project-token: ${{ secrets.PODIO_COVERITY_TOKEN }}
-        github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
-        release-platform: "LCG_99/x86_64-centos7-gcc10-opt"
-```
-The user needs to take care that the `release-platform` is compatible with the `coverity-container`.
-
-The action mounts the checkout directory into the selected container and wraps the variable `coverity-cmake-command` in the script:
-
-```sh
-#!/usr/bin/env bash
-
-set -e
-
-source ${VIEW_PATH}/${SETUP_SCRIPT}
-${RUN}
-mkdir build
-cd build
-${COVERITY_CMAKE_COMMAND}
-cov-build --dir cov-int make -j4
-tar czvf /myproject.tgz cov-int
-```
-It is expected that the `cov-build` command is already in the `PATH` of the selected image.
-
-The action finishes by uploading the tar ball to the server as per instruction given by Coverity Scan.
-
-### Parameters for Coverity extension
-The following parameters are supported:
- - ` coverity-container`: Location of container that has Coverity Scan installed (default: `ghcr.io/aidasoft/coverity:latest` but not public)
-- `coverity-cmake-command`:  CMake command for building your project, assuming in source build.
-- `coverity-project`: Coverity project name in URL encoding ( `/` -> `%2F` e.g. `AIDASoft%2FDD4hep`)'. Name under which your project is registered with the Coverity Scan server.
-- `coverity-project-token`: Coverity project token to interact with the server
-- `github-pat`: GitHub Personal Access Token for reading your custom image given under `coverity-container`
