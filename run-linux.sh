@@ -40,7 +40,7 @@ echo "Install Singularity"
 conda install --quiet --yes -c conda-forge singularity > /dev/null 2>&1
 eval "$(conda shell.bash hook)"
 
-echo "Starting Singularity image for ${SYSTEM} from /cvmfs/unpacked.cern.ch"
+echo "Starting Singularity image from ${SANDBOX_PATH}"
 singularity instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${SANDBOX_PATH} view_worker
 
 echo "####################################################################"

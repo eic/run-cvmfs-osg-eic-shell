@@ -11,22 +11,6 @@ jobs:
     - uses: eic/run-cvmfs-osg-eic-shell@main
       with:
         run_local_checkout: 'true'
-        unpacked: 'true'
-        platform-release: "jug_xl:nightly"
-        run: |
-          gcc --version
-          which gcc
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
-      with:
-        cvmfs_repositories: 'singularity.opensciencegrid.org'
-    - uses: eic/run-cvmfs-osg-eic-shell@main
-      with:
-        run_local_checkout: 'true'
-        unpacked: 'false'
         platform-release: "jug_xl:nightly"
         run: |
           gcc --version

@@ -55,7 +55,6 @@ runs:
         EIC_SHELL_RELEASE: ${{ inputs.release }}
         EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
         EIC_SHELL_PLATFORM: ${{ inputs.platform }}
-        UNPACKED: ${{ inputs.unpacked }}
         RUN: ${{ inputs.run }}
         SETUP_SCRIPT: ${{ inputs.setup-script }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
