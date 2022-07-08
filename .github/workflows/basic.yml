@@ -12,7 +12,7 @@ jobs:
       with:
         run_local_checkout: 'true'
         unpacked: 'true'
-        release-platform: "LCG_99/x86_64-centos7-gcc10-opt"
+        platform-release: "jug_xl:nightly"
         run: |
           gcc --version
           which gcc
@@ -27,7 +27,7 @@ jobs:
       with:
         run_local_checkout: 'true'
         unpacked: 'false'
-        release-platform: "LCG_99/x86_64-centos7-gcc10-opt"
+        platform-release: "jug_xl:nightly"
         run: |
           gcc --version
           which gcc

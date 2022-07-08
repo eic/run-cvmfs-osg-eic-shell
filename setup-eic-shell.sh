@@ -1,29 +1,31 @@
 #!/usr/bin/env bash
+set -Euo pipefail
+trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+IFS=$'\n\t'
 
-set -e
-if [ -z "${VIEW_PATH}" ]; then
-  if [ ! -z "${LCG_RELEASE}" ] && [ ! -z "${LCG_RELEASE_PLATFORM}" ]; then
-    echo "You set the variable release and release-platform together, this is not possible."
-    echo "You either the variable pair release and platform or just release-platform."
+if [ -z "${SANDBOX_PATH}" ]; then
+  if [ ! -z "${EIC_SHELL_RELEASE}" ] && [ ! -z "${EIC_SHELL_PLATFORM_RELEASE}" ]; then
+    echo "You set the variable release and platform-release together, this is not possible."
+    echo "You either the variable pair release and platform or just plaform-release."
     exit 1
   fi
 
 
-  if [ ! -z "${LCG_PLATFORM}" ] && [ ! -z "${LCG_RELEASE_PLATFORM}" ]; then
-    echo "You set the variable platform and release-platform together, this is not possible."
-    echo "You either the variable pair release and platform or just release-platform."
+  if [ ! -z "${EIC_SHELL_PLATFORM}" ] && [ ! -z "${EIC_SHELL_PLATFORM_RELEASE}" ]; then
+    echo "You set the variable platform and platform-release together, this is not possible."
+    echo "You either the variable pair release and platform or just platform-release."
     exit 1
   fi
 
-  if [ ! -z "${LCG_PLATFORM}" ]; then
-    export LCG_RELEASE_PLATFORM="${LCG_RELEASE}/${LCG_PLATFORM}"
+  if [ ! -z "${EIC_SHELL_PLATFORM}" ]; then
+    export EIC_SHELL_PLATFORM_RELEASE="${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
   fi
-  export LCG_RELEASE=$(echo "${LCG_RELEASE_PLATFORM}" | cut -d '/' -f 1)
-  export LCG_PLATFORM=$(echo "${LCG_RELEASE_PLATFORM}" | cut -d '/' -f 2)
-  export SYSTEM=$(echo "${LCG_RELEASE_PLATFORM}" | cut -d '/' -f 2 | cut -d '-' -f 2)
+  export EIC_SHELL_PLATFORM=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d ':' -f 1)
+  export EIC_SHELL_RELEASE=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d ':' -f 2)
+  export SYSTEM=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d '/' -f 2 | cut -d '-' -f 2)
 else
   if [ "${CONTAINER}" == "auto" ]; then
-    export SYSTEM=$(echo "${VIEW_PATH}" | awk -F'x86_64-' '{print $2}' | cut -d '-' -f 1)
+    export SYSTEM=$(echo "${SANDBOX_PATH}" | awk -F'x86_64-' '{print $2}' | cut -d '-' -f 1)
   else
     export SYSTEM=${CONTAINER}
   fi

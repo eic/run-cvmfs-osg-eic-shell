@@ -1,43 +1,35 @@
 #!/bin/zsh
 
 set -e
-if [ -z "${VIEW_PATH}" ]; then
+if [ -z "${SANDBOX_PATH}" ]; then
   echo "Checking if there is a working CVMFS mount"
 
-  if [ ! -d "/Users/Shared/cvmfs/sft.cern.ch/lcg/" ]; then
-    echo "The directory /Users/Shared/cvmfs/sft.cern.ch/lcg cannot be accessed!"
+  if [ ! -d "/Users/Shared/cvmfs/singularity.opensciencegrid.org/eicweb/" ]; then
+    echo "The directory /Users/Shared/cvmfs/singularity.opensciencegrid.org/eicweb cannot be accessed!"
     echo "Make sure you are using the cvmfs-contrib/github-action-cvmfs@v2 action"
-    echo "and that you have set cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'."
-    echo "There is no automout on macOS."
-    exit 1
-  fi
-
-  if [ ! -d "/Users/Shared/cvmfs/geant4.cern.ch/share/" ]; then
-    echo "The directory /Users/Shared/cvmfs/geant4.cern.ch/share/ cannot be accessed!"
-    echo "Make sure you are using the cvmfs-contrib/github-action-cvmfs@v2 action"
-    echo "and that you have set cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'."
-    echo "There is no automout on macOS."
+    echo "and that you have set cvmfs_repositories: 'singularity.opensciencegrid.org'."
+    echo "There is no automount on macOS."
     exit 1
   fi
 
   echo "CVMFS mount present"
 
-  VIEW_PATH="/Users/Shared/cvmfs/sft.cern.ch/lcg/views/${LCG_RELEASE_PLATFORM}"
-  if [[ "${LCG_RELEASE}" == *"dev"* ]]; then
-    VIEW_PATH="/Users/Shared/cvmfs/sft-nightlies.cern.ch/lcg/views/${LCG_RELEASE}/latest/${LCG_PLATFORM}"
+  SANDBOX_PATH="/Users/Shared/cvmfs/singularity.opensciencegrid.org/eicweb/${EIC_SHELL_PLATFORM_RELEASE}"
+  if [[ "${EIC_SHELL_RELEASE}" == *"dev"* ]]; then
+    SANDBOX_PATH="/Users/Shared/cvmfs/singularity.opensciencegrid.org/eicweb/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
   fi
 fi
 
-echo "Installing view prerequisites:"
+echo "Installing EIC shell prerequisites:"
 brew install ninja
 brew install gfortran
 brew install --cask xquartz
 echo "Installation done."
 
-echo "Full view path is ${VIEW_PATH}"
+echo "Full EIC shell path is ${SANDBOX_PATH}"
 
-if [ ! -d "${VIEW_PATH}" ]; then
-  echo "Did not find a view under this path!"
+if [ ! -d "${SANDBOX_PATH}" ]; then
+  echo "Did not find an EIC shell under this path!"
   exit 1
 fi
 
@@ -45,7 +37,6 @@ echo "#!/bin/zsh
 
 set -e
 
-source ${VIEW_PATH}/${SETUP_SCRIPT}
 cd ${GITHUB_WORKSPACE}
 
 ${RUN}

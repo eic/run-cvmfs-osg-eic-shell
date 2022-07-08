@@ -1,5 +1,5 @@
-name: 'Run code on top of an LCG view'
-description: 'Spawns appropriate docker image and executes user code in the environment of a specified LCG view'
+name: 'execute user code in an EIC environment'
+description: 'Spawns appropriate docker image and executes user code in the environment of a specified EIC shell'
 branding:
   icon: 'play'
   color: 'blue'
@@ -9,21 +9,17 @@ inputs:
     required: false
     default: 'auto'
   platform:
-    description: 'LCG view platform you are targeting (e.g. x86_64-centos8-gcc10-opt)'
+    description: 'EIC shell platform you are targeting (e.g. jug_xl)'
     required: false
     default: ''
   release:
-    description: 'LCG view release you are targeting (e.g. LCG_99)'
+    description: 'EIC shell release you are targeting (e.g. 3.0-stable)'
     required: false
     default: ''
-  release-platform:
-    description: 'LCG view release platform string you are targeting (e.g. LCG_99/x86_64-centos8-gcc10-opt'
+  platform-release:
+    description: 'LCG view release platform string you are targeting (e.g. jug_xl:3.0-stable)'
     required: false
     default: ''
-  unpacked:
-    description: 'Use image from /cvmfs/unpacked.cern.ch with Singularity, or if false use GitHub Container Registry with Docker'
-    required: false
-    default: 'false'
   run:
     description: 'They payload code you want to execute on top of the view'
     required: false
@@ -33,11 +29,11 @@ inputs:
     required: false
     default: 'false'
   setup-script:
-    description: 'Initialization/Setup script for a view that sets the environment (e.g. setup.sh)'
+    description: 'Initialization/setup script for a shell that sets the environment (e.g. /opt/detector/setup.sh)'
     required: false
-    default: 'setup.sh'
-  view-path:
-    description: 'Custom path where the setup script for the view is location'
+    default: '/opt/detector/setup.sh'
+  sandbox-path:
+    description: 'Custom path where the sandbox is located'
     required: false
     default: ''
 
@@ -47,19 +43,19 @@ runs:
     - run: |
         if [ "${{ inputs.run_local_checkout }}" == "true" ]; then
           echo "WARNING running local checkout of the action !"
-          .  setup-lcg-view.sh local
+          .  setup-eic-shell.sh local
         else
-          ${{ github.action_path }}/setup-lcg-view.sh
+          ${{ github.action_path }}/setup-eic-shell.sh
         fi
       shell: bash
       env:
         THIS: ${{ github.action_path }}
         CONTAINER: ${{ inputs.container }}
         GITHUB_ACTOR: ${{ github.actor }}
-        LCG_RELEASE: ${{ inputs.release }}
-        LCG_RELEASE_PLATFORM: ${{ inputs.release-platform }}
-        LCG_PLATFORM: ${{ inputs.platform }}
+        EIC_SHELL_RELEASE: ${{ inputs.release }}
+        EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
+        EIC_SHELL_PLATFORM: ${{ inputs.platform }}
         UNPACKED: ${{ inputs.unpacked }}
         RUN: ${{ inputs.run }}
         SETUP_SCRIPT: ${{ inputs.setup-script }}
-        VIEW_PATH: ${{ inputs.view-path }}
+        SANDBOX_PATH: ${{ inputs.sandbox-path }}
