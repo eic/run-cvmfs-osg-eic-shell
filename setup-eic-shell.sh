@@ -24,6 +24,14 @@ if [ -z "${SANDBOX_PATH}" ]; then
   export EIC_SHELL_RELEASE=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d ':' -f 2)
 fi
 
+if [ "$(uname)" == "Linux" ]; then
+  if [ "$1" == "local" ]; then
+    . run-linux.sh
+  else
+    $THIS/run-linux.sh
+  fi
+fi
+
 if [ "$(uname)" == "Darwin" ]; then
   echo "You are trying to use this action on a macOS system, this is not possible."
   exit 1
