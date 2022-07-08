@@ -15,3 +15,4 @@ jobs:
         run: |
           gcc --version
           which gcc
+          eic-info
