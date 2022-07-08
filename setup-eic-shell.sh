@@ -22,36 +22,9 @@ if [ -z "${SANDBOX_PATH}" ]; then
   fi
   export EIC_SHELL_PLATFORM=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d ':' -f 1)
   export EIC_SHELL_RELEASE=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d ':' -f 2)
-  export SYSTEM=$(echo "${EIC_SHELL_PLATFORM_RELEASE}" | cut -d '/' -f 2 | cut -d '-' -f 2)
-else
-  if [ "${CONTAINER}" == "auto" ]; then
-    export SYSTEM=$(echo "${SANDBOX_PATH}" | awk -F'x86_64-' '{print $2}' | cut -d '-' -f 1)
-  else
-    export SYSTEM=${CONTAINER}
-  fi
 fi
-
-if [ "$(uname)" == "Linux" ]; then
-  if [[ "${SYSTEM}" == *"mac"* ]]; then
-    echo "You are trying to use a mac view on a linux system, this is not possible."
-    exit 1
-  fi
-  if [ "$1" == "local" ]; then
-    . run-linux.sh
-  else
-    $THIS/run-linux.sh
-  fi
-fi
-
 
 if [ "$(uname)" == "Darwin" ]; then
-  if [[ "${SYSTEM}" != *"mac"* ]]; then
-    echo "You are trying to use a non macOS view on a macOS system, this is not possible."
-    exit 1
-  fi
-  if [ "$1" == "local" ]; then
-    . run-macOS.sh
-  else
-    $THIS/run-macOS.sh
-  fi
+  echo "You are trying to use this action on a macOS system, this is not possible."
+  exit 1
 fi
