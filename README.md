@@ -1,5 +1,5 @@
 # GitHub Action: eic/run-cvmfs-osg-eic-shell
-![linux](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/linux/badge.svg)![macOS](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/macOS/badge.svg)![dev](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/dev/badge.svg)
+![linux](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/linux/badge.svg)
 
 This GitHub Action executes user payload code inside a EIC shell environment, specified by the user.
 
