@@ -6,7 +6,7 @@ This GitHub Action executes user payload code inside a LCG view environment, spe
 ## Instructions
 
 ### Prerequisites
-This action depends on the user to call the companion action `uses: cvmfs-contrib/github-action-cvmfs@v2` before using `uses: eic/run-cvmfs-osg-eic-shell@v3`, which will install CVMFS on the node. GitHub Actions currently do not support calling the action `github-action-cvmfs` from within `run-lcg-view`, this needs to be done explicitly by the user.
+This action depends on the user to call the companion action `uses: cvmfs-contrib/github-action-cvmfs@v2` before using `uses: eic/run-cvmfs-osg-eic-shell@main`, which will install CVMFS on the node. GitHub Actions currently do not support calling the action `github-action-cvmfs` from within `run-lcg-view`, this needs to be done explicitly by the user.
 
 ### Example
 
@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: eic/run-cvmfs-osg-eic-shell@v3
+    - uses: eic/run-cvmfs-osg-eic-shell@main
       with:
         release-platform: "LCG_99/x86_64-centos7-gcc10-opt"
         run: |
@@ -54,7 +54,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v2
       with:
         cvmfs_repositories: 'sft.cern.ch,geant4.cern.ch'
-    - uses: eic/run-cvmfs-osg-eic-shell@v3
+    - uses: eic/run-cvmfs-osg-eic-shell@main
       with:
         release-platform: "LCG_99/x86_64-mac1015-clang120-opt"
         run: |
