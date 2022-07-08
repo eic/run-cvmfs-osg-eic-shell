@@ -1,5 +1,5 @@
 # GitHub Action: eic/run-cvmfs-osg-eic-shell
-![linux](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/linux/badge.svg)![macOS](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/macOS/badge.svg)![dev3](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/dev3/badge.svg)[![coverity](https://github.com/eic/run-cvmfs-osg-eic-shell/actions/workflows/coverity.yml/badge.svg)](https://github.com/eic/run-cvmfs-osg-eic-shell/actions/workflows/coverity.yml)
+![linux](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/linux/badge.svg)![macOS](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/macOS/badge.svg)![dev](https://github.com/eic/run-cvmfs-osg-eic-shell/workflows/dev/badge.svg)[![coverity](https://github.com/eic/run-cvmfs-osg-eic-shell/actions/workflows/coverity.yml/badge.svg)](https://github.com/eic/run-cvmfs-osg-eic-shell/actions/workflows/coverity.yml)
 
 This GitHub Action executes user payload code inside a LCG view environment, specified by the user.
 

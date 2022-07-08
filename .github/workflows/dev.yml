@@ -1,4 +1,4 @@
-name: dev3
+name: dev
 on: [push, pull_request]
 jobs:
   run-lcg:
