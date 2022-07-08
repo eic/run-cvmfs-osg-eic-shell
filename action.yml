@@ -4,10 +4,6 @@ branding:
   icon: 'play'
   color: 'blue'
 inputs:
-  container:
-    description: 'Which container to use as base to setup a view. By default the container is inferred from `view-path` (default: `auto`)'
-    required: false
-    default: 'auto'
   platform:
     description: 'EIC shell platform you are targeting (e.g. jug_xl)'
     required: false
@@ -50,7 +46,6 @@ runs:
       shell: bash
       env:
         THIS: ${{ github.action_path }}
-        CONTAINER: ${{ inputs.container }}
         GITHUB_ACTOR: ${{ github.actor }}
         EIC_SHELL_RELEASE: ${{ inputs.release }}
         EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
