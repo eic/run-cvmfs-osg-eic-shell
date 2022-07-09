@@ -25,7 +25,7 @@ if [ -z "${SANDBOX_PATH}" ]; then
 fi
 
 if [ "$(uname)" == "Linux" ]; then
-  if [ "$1" == "local" ]; then
+  if [ "${1:-}" == "local" ]; then
     . run-linux.sh
   else
     $THIS/run-linux.sh
