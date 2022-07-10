@@ -10,7 +10,7 @@ This action depends on the user to call the companion action `uses: cvmfs-contri
 
 ### Example
 
-You can use this GitHub Action in a workflow in your own repository with `uses: aidasoft/`.
+You can use this GitHub Action in a workflow in your own repository with `uses: eic/run-cvmfs-osg-eic-shell@v1`.
 
 A minimal job example for GitHub-hosted runners of type `ubuntu-latest`:
 ```yaml
@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: cvmfs-contrib/github-action-cvmfs@v2
-    - uses: eic/run-cvmfs-osg-eic-shell@main
+    - uses: eic/run-cvmfs-osg-eic-shell@v1
       with:
         platform-release: "jug_xl:nightly"
         run: |
@@ -28,7 +28,7 @@ jobs:
           which gcc
           eic-info
 ```
-In this case the action will automatically resolve the correct container image (in this case `centos7`) and spawn an instance with Docker from GitHub Container Registry or with Singularity from `/cvmfs/unpacked.cern.ch/`. The `Dockerfile` for the supported images can be found in the [AIDASoft/management](https://github.com/AIDASoft/management) repository.
+In this case the action will automatically resolve the correct container image (in this case `jug_xl:nightly`) and spawn an instance with Singularity from `/cvmfs/singularity.opensciencegrid.org/`.
 
 The action mounts the checkout directory into the mentioned container and wraps the variable `run` in the script:
 
@@ -50,9 +50,9 @@ which is executed in the container and thus giving the user an easy and direct a
 The following parameters are supported:
  - `platform`: EIC shell platform you are targeting (e.g. `jug_xl`)
  - `release`: EIC shell release you are targeting (e.g. `3.0-stable`)
- - `platform-release`: EIC shell release platform string you are targeting (e.g. `jug_xl:3.0-stable`)
+ - `platform-release`: EIC shell platform release string you are targeting (e.g. `jug_xl:3.0-stable`)
  - `run`: They payload code you want to execute on top of the view
- - `setup-script`: Initialization/Setup script for a view that sets the environment (e.g. `setup.sh`)
+ - `setup-script`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/setup.sh`)
  - `sandbox-path`: Path where the setup script for the custom view is location. By specifying this variable the auto-resolving of the view based on `release` and `platform` is disabled.
 
 Please be aware that you must use the combination of parameters `release` and `platform` together or use just the variable `platform-release` alone. These two options are given to enable more flexibility for the user to form their workflow with matrix expressions.
