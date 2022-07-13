@@ -24,10 +24,10 @@ inputs:
     description: 'Run the local checkout of the action and not the main repo code'
     required: false
     default: 'false'
-  setup-script:
-    description: 'Initialization/setup script for a shell that sets the environment (e.g. /opt/detector/setup.sh)'
+  setup:
+    description: 'Environment initialization bash script that is sourced (e.g. install/setup.sh)'
     required: false
-    default: '/opt/detector/setup.sh'
+    default: ''
   sandbox-path:
     description: 'Custom path where the sandbox is located'
     required: false
@@ -51,5 +51,5 @@ runs:
         EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
         EIC_SHELL_PLATFORM: ${{ inputs.platform }}
         RUN: ${{ inputs.run }}
-        SETUP_SCRIPT: ${{ inputs.setup-script }}
+        SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
