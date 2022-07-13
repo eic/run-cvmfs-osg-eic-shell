@@ -33,6 +33,8 @@ trap 's=\$?; echo \"\$0: Error on line \"\$LINENO\": \$BASH_COMMAND\"; exit \$s'
 IFS=\$'\n\t'
 set -e
 
+source ${SETUP}
+
 ${RUN}
 " > ${GITHUB_WORKSPACE}/action_payload.sh
 chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
