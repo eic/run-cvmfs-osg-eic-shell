@@ -40,6 +40,8 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 IFS=$'\n\t'
 set -e
 
+source ${SETUP}
+
 ${RUN} # the multi-line variable specified in the action under run: |
 ```
 
