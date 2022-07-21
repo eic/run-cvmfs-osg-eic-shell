@@ -40,6 +40,8 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 IFS=$'\n\t'
 set -e
 
+source ${SETUP}
+
 ${RUN} # the multi-line variable specified in the action under run: |
 ```
 
@@ -52,7 +54,7 @@ The following parameters are supported:
  - `release`: EIC shell release you are targeting (e.g. `3.0-stable`)
  - `platform-release`: EIC shell platform release string you are targeting (e.g. `jug_xl:3.0-stable`)
  - `run`: They payload code you want to execute on top of the view
- - `setup-script`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/setup.sh`)
+ - `setup`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/setup.sh`)
  - `sandbox-path`: Path where the setup script for the custom view is location. By specifying this variable the auto-resolving of the view based on `release` and `platform` is disabled.
 
 Please be aware that you must use the combination of parameters `release` and `platform` together or use just the variable `platform-release` alone. These two options are given to enable more flexibility for the user to form their workflow with matrix expressions.
