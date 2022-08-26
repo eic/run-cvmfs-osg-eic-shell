@@ -43,7 +43,7 @@ echo "Install Singularity"
 conda install --quiet --yes -c conda-forge singularity > /dev/null 2>&1
 eval "$(conda shell.bash hook)"
 
-worker=$(echo ${SANDBOX_PATH} | sha256sum)
+worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
 if singularity instance list | grep ${worker} ; then
   echo "Reusing exisitng Singularity image from ${SANDBOX_PATH}"
  else
