@@ -1,4 +1,4 @@
-name: linux
+name: double
 on: [push, pull_request]
 jobs:
   singularity:
