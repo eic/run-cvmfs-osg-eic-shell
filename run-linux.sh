@@ -43,11 +43,16 @@ echo "Install Singularity"
 conda install --quiet --yes -c conda-forge singularity > /dev/null 2>&1
 eval "$(conda shell.bash hook)"
 
-echo "Starting Singularity image from ${SANDBOX_PATH}"
-singularity instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${SANDBOX_PATH} view_worker
+worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
+if singularity instance list | grep ${worker} ; then
+  echo "Reusing exisitng Singularity image from ${SANDBOX_PATH}"
+ else
+  echo "Starting Singularity image from ${SANDBOX_PATH}"
+  singularity instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${SANDBOX_PATH} ${worker}
+fi
 
 echo "####################################################################"
 echo "###################### Executing user payload ######################"
 echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
 
-singularity exec instance://view_worker /bin/bash -c "cd ${GITHUB_WORKSPACE}; ./action_payload.sh"
+singularity exec instance://${worker} /bin/bash -c "cd ${GITHUB_WORKSPACE}; ./action_payload.sh"
