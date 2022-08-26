@@ -4,8 +4,8 @@ jobs:
   singularity:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
       with:
         cvmfs_repositories: 'singularity.opensciencegrid.org'
     - uses: eic/run-cvmfs-osg-eic-shell@main
