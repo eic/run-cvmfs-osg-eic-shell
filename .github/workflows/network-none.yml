@@ -1,0 +1,20 @@
+name: network-none
+on: [push, pull_request]
+jobs:
+  singularity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    - uses: eic/run-cvmfs-osg-eic-shell@main
+      with:
+        run_local_checkout: 'true'
+        platform-release: "jug_xl:nightly"
+        network_types: "none"
+        run: |
+          if ping -c 1 8.8.8.8 ; then
+            false
+          else
+            true
