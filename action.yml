@@ -32,6 +32,10 @@ inputs:
     description: 'Custom path where the sandbox is located'
     required: false
     default: ''
+  enable_network:
+    description: 'Enable network access inside EIC shell'
+    required: false
+    default: true
 
 runs:
   using: "composite"
@@ -53,3 +57,4 @@ runs:
         RUN: ${{ inputs.run }}
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
+        ENABLE_NETWORK: ${{ inputs.enable_network }}
