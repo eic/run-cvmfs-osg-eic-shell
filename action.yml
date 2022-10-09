@@ -13,17 +13,13 @@ inputs:
     required: false
     default: ''
   platform-release:
-    description: 'LCG view release platform string you are targeting (e.g. jug_xl:3.0-stable)'
+    description: 'EIC shell release platform string you are targeting (e.g. jug_xl:3.0-stable)'
     required: false
     default: ''
   run:
     description: 'They payload code you want to execute on top of the view'
     required: false
     default: ''
-  run_local_checkout:
-    description: 'Run the local checkout of the action and not the main repo code'
-    required: false
-    default: 'false'
   setup:
     description: 'Environment initialization bash script that is sourced (e.g. install/setup.sh)'
     required: false
@@ -32,17 +28,16 @@ inputs:
     description: 'Custom path where the sandbox is located'
     required: false
     default: ''
+  network_types:
+    description: 'Network access types inside EIC shell'
+    required: false
+    default: 'bridge'
 
 runs:
   using: "composite"
   steps:
     - run: |
-        if [ "${{ inputs.run_local_checkout }}" == "true" ]; then
-          echo "WARNING running local checkout of the action !"
-          .  setup-eic-shell.sh local
-        else
-          ${{ github.action_path }}/setup-eic-shell.sh
-        fi
+        ${{ github.action_path }}/setup-eic-shell.sh
       shell: bash
       env:
         THIS: ${{ github.action_path }}
@@ -53,3 +48,4 @@ runs:
         RUN: ${{ inputs.run }}
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
+        NETWORK_TYPES: ${{ inputs.network_types }}

@@ -1,4 +1,4 @@
-name: double
+name: network-none
 on: [push, pull_request]
 jobs:
   singularity:
@@ -11,14 +11,10 @@ jobs:
     - uses: ./
       with:
         platform-release: "jug_xl:nightly"
+        network_types: "none"
         run: |
-          gcc --version
-          which gcc
-          eic-info
-    - uses: ./
-      with:
-        platform-release: "jug_xl:nightly"
-        run: |
-          gcc --version
-          which gcc
-          eic-info
+          if ping -c 1 8.8.8.8 ; then
+            false
+          else
+            true
+          fi

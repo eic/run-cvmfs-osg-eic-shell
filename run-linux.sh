@@ -48,7 +48,7 @@ if singularity instance list | grep ${worker} ; then
   echo "Reusing exisitng Singularity image from ${SANDBOX_PATH}"
  else
   echo "Starting Singularity image from ${SANDBOX_PATH}"
-  singularity instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${SANDBOX_PATH} ${worker}
+  singularity instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} --network ${NETWORK_TYPES:-bridge} ${SANDBOX_PATH} ${worker}
 fi
 
 echo "####################################################################"
