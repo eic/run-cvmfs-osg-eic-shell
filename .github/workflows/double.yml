@@ -8,17 +8,15 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v3
       with:
         cvmfs_repositories: 'singularity.opensciencegrid.org'
-    - uses: eic/run-cvmfs-osg-eic-shell@main
+    - uses: ./
       with:
-        run_local_checkout: 'true'
         platform-release: "jug_xl:nightly"
         run: |
           gcc --version
           which gcc
           eic-info
-    - uses: eic/run-cvmfs-osg-eic-shell@main
+    - uses: ./
       with:
-        run_local_checkout: 'true'
         platform-release: "jug_xl:nightly"
         run: |
           gcc --version
