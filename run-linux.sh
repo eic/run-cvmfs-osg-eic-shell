@@ -43,7 +43,7 @@ v=$(curl -sL https://api.github.com/repos/apptainer/apptainer/releases/latest | 
 echo "Installing Apptainer ${v}"
 deb="apptainer_${v/v/}_amd64.deb"
 sudo wget --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
-sudo apt-get install -q -y /var/cache/apt/archives/${deb}
+sudo apt-get -q -y install /var/cache/apt/archives/${deb}
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
 if apptainer instance list | grep ${worker} ; then
