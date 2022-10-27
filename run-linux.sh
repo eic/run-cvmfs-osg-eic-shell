@@ -40,9 +40,10 @@ ${RUN}
 chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
 
 echo "Install Apptainer"
-v="1.1.3" # FIXME get from github api
+v=$(curl -sL https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
+echo "(using version ${v})"
 deb="apptainer_${v}_amd64.deb"
-sudo wget --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/v${v}/${deb}
+sudo wget --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/v${v}/${deb}
 sudo apt-get install -q -y /var/cache/apt/archives/${deb}
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
