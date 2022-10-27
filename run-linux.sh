@@ -39,20 +39,22 @@ ${RUN}
 " > ${GITHUB_WORKSPACE}/action_payload.sh
 chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
 
-echo "Install Singularity"
-conda install --quiet --yes -c conda-forge singularity > /dev/null 2>&1
-eval "$(conda shell.bash hook)"
+v=$(curl -sL https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
+echo "Installing Apptainer ${v}"
+deb="apptainer_${v/v/}_amd64.deb"
+sudo wget --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
+sudo apt-get -q -y install /var/cache/apt/archives/${deb}
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
-if singularity instance list | grep ${worker} ; then
-  echo "Reusing exisitng Singularity image from ${SANDBOX_PATH}"
+if apptainer instance list | grep ${worker} ; then
+  echo "Reusing exisitng Apptainer image from ${SANDBOX_PATH}"
  else
-  echo "Starting Singularity image from ${SANDBOX_PATH}"
-  singularity instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} --network ${NETWORK_TYPES:-bridge} ${SANDBOX_PATH} ${worker}
+  echo "Starting Apptainer image from ${SANDBOX_PATH}"
+  apptainer instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} --network ${NETWORK_TYPES:-bridge} ${SANDBOX_PATH} ${worker}
 fi
 
 echo "####################################################################"
 echo "###################### Executing user payload ######################"
 echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
 
-singularity exec instance://${worker} /bin/bash -c "cd ${GITHUB_WORKSPACE}; ./action_payload.sh"
+apptainer exec instance://${worker} /bin/bash -c "cd ${GITHUB_WORKSPACE}; ./action_payload.sh"
