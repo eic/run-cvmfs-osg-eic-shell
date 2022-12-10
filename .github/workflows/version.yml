@@ -1,0 +1,18 @@
+name: version
+on: [push, pull_request]
+jobs:
+  singularity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cvmfs-contrib/github-action-cvmfs@v3
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    - uses: ./
+      with:
+        platform-release: "jug_xl:nightly"
+        apptainer_version: "v1.1.2"
+        run: |
+          gcc --version
+          which gcc
+          eic-info
