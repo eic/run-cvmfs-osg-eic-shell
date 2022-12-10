@@ -32,6 +32,10 @@ inputs:
     description: 'Network access types inside EIC shell'
     required: false
     default: 'bridge'
+  apptainer_version:
+    description: 'Apptainer version to use (e.g. v1.1.3 or latest)'
+    required: false
+    default: 'latest'
 
 runs:
   using: "composite"
@@ -49,3 +53,4 @@ runs:
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
         NETWORK_TYPES: ${{ inputs.network_types }}
+        APPTAINER_VERSION: ${{ inputs.apptainer_version }}
