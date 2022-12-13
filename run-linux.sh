@@ -56,7 +56,7 @@ sudo wget --quiet --timestamping --output-document /var/cache/apt/archives/${deb
 sudo apt-get -q -y install /var/cache/apt/archives/${deb}
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
-if apptainer instance list | grep ${worker} ; then
+if sudo apptainer instance list | grep ${worker} ; then
   echo "Reusing exisitng Apptainer image from ${SANDBOX_PATH}"
  else
   echo "Starting Apptainer image from ${SANDBOX_PATH}"
