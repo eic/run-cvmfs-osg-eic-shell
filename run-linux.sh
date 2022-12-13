@@ -56,15 +56,15 @@ sudo wget --quiet --timestamping --output-document /var/cache/apt/archives/${deb
 sudo apt-get -q -y install /var/cache/apt/archives/${deb}
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
-if sudo apptainer instance list | grep ${worker} ; then
+if apptainer instance list | grep ${worker} ; then
   echo "Reusing exisitng Apptainer image from ${SANDBOX_PATH}"
  else
   echo "Starting Apptainer image from ${SANDBOX_PATH}"
-  sudo apptainer instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} --network ${NETWORK_TYPES:-bridge} ${SANDBOX_PATH} ${worker}
+  apptainer instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} --network ${NETWORK_TYPES:-bridge} ${SANDBOX_PATH} ${worker}
 fi
 
 echo "####################################################################"
 echo "###################### Executing user payload ######################"
 echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
 
-sudo apptainer exec instance://${worker} /bin/bash -c "cd ${GITHUB_WORKSPACE}; ./action_payload.sh"
+apptainer exec instance://${worker} /bin/bash -c "cd ${GITHUB_WORKSPACE}; ./action_payload.sh"
