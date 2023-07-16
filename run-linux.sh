@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Checking if there is a working CVMFS mount"
+echo "::group::Checking if there is a working CVMFS mount"
 
 if [ ! -d "/cvmfs/singularity.opensciencegrid.org" ]; then
   echo "The directory /cvmfs/singularity.opensciencegrid.org cannot be accessed!"
@@ -11,6 +11,7 @@ if [ ! -d "/cvmfs/singularity.opensciencegrid.org" ]; then
 fi
 
 echo "CVMFS mount present"
+echo "::endgroup::"
 
 if [ -z "${SANDBOX_PATH}" ]; then
   SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/eicweb/${EIC_SHELL_PLATFORM_RELEASE}"
@@ -50,10 +51,11 @@ else
   v=${APPTAINER_VERSION}
 fi
 
-echo "Installing Apptainer ${v}"
+echo "::group::Installing Apptainer ${v}"
 deb="apptainer_${v/v/}_amd64.deb"
 sudo wget --tries 5 --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
 sudo apt-get -q -y install /var/cache/apt/archives/${deb}
+echo "::endgroup::"
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
 if apptainer instance list | grep ${worker} ; then
