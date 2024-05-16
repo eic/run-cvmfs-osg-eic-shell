@@ -54,7 +54,7 @@ The following parameters are supported:
  - `release`: EIC shell release you are targeting (e.g. `3.0-stable`)
  - `platform-release`: EIC shell platform release string you are targeting (e.g. `jug_xl:3.0-stable`)
  - `run`: They payload code you want to execute on top of the view
- - `setup`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/setup.sh`)
+ - `setup`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/epic-main/bin/thisepic.sh`)
  - `sandbox-path`: Path where the setup script for the custom view is location. By specifying this variable the auto-resolving of the view based on `release` and `platform` is disabled.
  - `network_types`: Network types to setup inside container. Defaults to `bridge` networking, but can be `none` to disable networking.
  - `apptainer_version`: Apptainer version to use. Defaults to `latest`, but can be any version such as `v1.1.3`.
