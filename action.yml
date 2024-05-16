@@ -21,7 +21,7 @@ inputs:
     required: false
     default: ''
   setup:
-    description: 'Environment initialization bash script that is sourced (e.g. install/setup.sh)'
+    description: 'Environment initialization bash script that is sourced (e.g. install/bin/thisepic.sh)'
     required: false
     default: ''
   sandbox-path:
