@@ -6,7 +6,7 @@ This GitHub Action executes user payload code inside a EIC shell environment, sp
 ## Instructions
 
 ### Prerequisites
-This action depends on the user to call the companion action `uses: cvmfs-contrib/github-action-cvmfs@v2` before using `uses: eic/run-cvmfs-osg-eic-shell@v1`, which will install CVMFS on the node. GitHub Actions currently do not support calling the action `github-action-cvmfs` from within `run-cvmfs-osg-eic-shell`, this needs to be done explicitly by the user.
+This action depends on the user to call the companion action `uses: cvmfs-contrib/github-action-cvmfs@v4` before using `uses: eic/run-cvmfs-osg-eic-shell@v1`, which will install CVMFS on the node. GitHub Actions currently do not support calling the action `github-action-cvmfs` from within `run-cvmfs-osg-eic-shell`, this needs to be done explicitly by the user.
 
 ### Example
 
@@ -18,8 +18,8 @@ jobs:
   run-eic-shell:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: eic/run-cvmfs-osg-eic-shell@v1
       with:
         platform-release: "eic_xl:nightly"
