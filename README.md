@@ -22,13 +22,13 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v2
     - uses: eic/run-cvmfs-osg-eic-shell@v1
       with:
-        platform-release: "jug_xl:nightly"
+        platform-release: "eic_xl:nightly"
         run: |
           gcc --version
           which gcc
           eic-info
 ```
-In this case the action will automatically resolve the correct container image (in this case `jug_xl:nightly`) and spawn an instance with Singularity from `/cvmfs/singularity.opensciencegrid.org/`.
+In this case the action will automatically resolve the correct container image (in this case `eic_xl:nightly`) and spawn an instance with Singularity from `/cvmfs/singularity.opensciencegrid.org/`.
 
 The action mounts the checkout directory into the mentioned container and wraps the variable `run` in the script:
 
@@ -50,9 +50,9 @@ which is executed in the container and thus giving the user an easy and direct a
 
 ### Parameters
 The following parameters are supported:
- - `platform`: EIC shell platform you are targeting (e.g. `jug_xl`)
+ - `platform`: EIC shell platform you are targeting (e.g. `eic_xl`)
  - `release`: EIC shell release you are targeting (e.g. `3.0-stable`)
- - `platform-release`: EIC shell platform release string you are targeting (e.g. `jug_xl:3.0-stable`)
+ - `platform-release`: EIC shell platform release string you are targeting (e.g. `eic_xl:3.0-stable`)
  - `run`: They payload code you want to execute on top of the view
  - `setup`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/epic-main/bin/thisepic.sh`)
  - `sandbox-path`: Path where the setup script for the custom view is location. By specifying this variable the auto-resolving of the view based on `release` and `platform` is disabled.
