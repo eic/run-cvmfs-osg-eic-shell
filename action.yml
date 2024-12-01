@@ -5,7 +5,7 @@ branding:
   color: 'blue'
 inputs:
   platform:
-    description: 'EIC shell platform you are targeting (e.g. jug_xl)'
+    description: 'EIC shell platform you are targeting (e.g. eic_xl)'
     required: false
     default: ''
   release:
@@ -13,7 +13,7 @@ inputs:
     required: false
     default: ''
   platform-release:
-    description: 'EIC shell release platform string you are targeting (e.g. jug_xl:3.0-stable)'
+    description: 'EIC shell release platform string you are targeting (e.g. eic_xl:24.11.2-stable)'
     required: false
     default: ''
   run:
