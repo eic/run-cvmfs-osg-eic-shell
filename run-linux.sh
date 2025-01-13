@@ -52,7 +52,7 @@ else
 fi
 
 echo "::group::Installing Apptainer ${v}"
-deb="apptainer_${v/v/}_amd64.deb"
+deb="apptainer-suid_${v/v/}_amd64.deb"
 sudo wget --tries 5 --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
 sudo apt-get -q -y install /var/cache/apt/archives/${deb}
 echo "::endgroup::"
