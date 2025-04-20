@@ -14,9 +14,9 @@ echo "CVMFS mount present"
 echo "::endgroup::"
 
 if [ -z "${SANDBOX_PATH}" ]; then
-  SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/eicweb/${EIC_SHELL_PLATFORM_RELEASE}"
+  SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM_RELEASE}"
   if [[ "${EIC_SHELL_RELEASE}" == *"dev"* ]]; then
-    SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/eicweb/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
+    SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
   fi
 fi
 
