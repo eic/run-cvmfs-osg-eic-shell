@@ -1,0 +1,19 @@
+name: organization
+on: [push, pull_request]
+jobs:
+  singularity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v4
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    - uses: ./
+      with:
+        organization: "eicweb"
+        platform-release: "eic_xl:25.04.0-stable"
+        apptainer_version: "v1.1.2"
+        run: |
+          gcc --version
+          which gcc
+          eic-info

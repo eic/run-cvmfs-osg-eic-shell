@@ -4,6 +4,10 @@ branding:
   icon: 'play'
   color: 'blue'
 inputs:
+  organization:
+    description: 'EIC shell organization you are targeting (e.g. eic)'
+    required: false
+    default: 'eicweb'
   platform:
     description: 'EIC shell platform you are targeting (e.g. eic_xl)'
     required: false
@@ -46,6 +50,7 @@ runs:
       env:
         THIS: ${{ github.action_path }}
         GITHUB_ACTOR: ${{ github.actor }}
+        EIC_SHELL_ORGANIZATION: ${{ inputs.organization }}
         EIC_SHELL_RELEASE: ${{ inputs.release }}
         EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
         EIC_SHELL_PLATFORM: ${{ inputs.platform }}
