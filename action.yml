@@ -7,7 +7,7 @@ inputs:
   organization:
     description: 'EIC shell organization you are targeting (e.g. eic)'
     required: false
-    default: 'eic'
+    default: 'eicweb'
   platform:
     description: 'EIC shell platform you are targeting (e.g. eic_xl)'
     required: false
