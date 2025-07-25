@@ -54,6 +54,7 @@ fi
 echo "::group::Installing Apptainer ${v}"
 for deb in "apptainer_${v/v/}_amd64.deb" "apptainer-suid_${v/v/}_amd64.deb"; do
   sudo wget --tries 5 --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
+  sudo touch /var/lib/man-db/auto-update
   sudo apt-get -q -y install /var/cache/apt/archives/${deb}
 done
 echo "::endgroup::"
