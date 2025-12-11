@@ -48,13 +48,17 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/cache@v4
+    - name: Restore cached apptainer package
+      id: cache-restore
+      uses: actions/cache@v4
       with:
         key: apptainer-deb-cache-${{ inputs.apptainer_version }}
         path: |
           ${{ inputs.apptainer_deb_cache }}
         save-always: true
-    - run: |
+    - name: Run inside eic-shell
+      id: run-eic-shell
+      run: |
         ${{ github.action_path }}/setup-eic-shell.sh
       shell: bash
       env:
@@ -70,3 +74,10 @@ runs:
         NETWORK_TYPES: ${{ inputs.network_types }}
         APPTAINER_DEB_CACHE: ${{ inputs.apptainer_deb_cache }}
         APPTAINER_VERSION: ${{ inputs.apptainer_version }}
+    - name: Store apptainer package to cache
+      uses: actions/cache/save@v4
+      if: steps.run-eic-shell.outputs.cache-update == 'true'      
+      with:
+        key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+        path: |
+          ${{ inputs.apptainer_deb_cache }}
