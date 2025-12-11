@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-
-set -e
+set -Euo pipefail
+trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+IFS=$'\n\t'
 
 echo "::group::Checking if there is a working CVMFS mount"
 
