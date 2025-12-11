@@ -59,7 +59,7 @@ for deb in "apptainer_${v/v/}_amd64.deb" "apptainer-suid_${v/v/}_amd64.deb"; do
     wget --tries 5 --output-document ${APPTAINER_DEB_CACHE}/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
   fi
   sudo rm -f /var/lib/man-db/auto-update
-  sudo apt-get -q -y install ${APPTAINER_DEB_CACHE}/${deb}
+  sudo dpkg -i ${APPTAINER_DEB_CACHE}/${deb}
   sudo touch /var/lib/man-db/auto-update
 done
 echo "::endgroup::"
