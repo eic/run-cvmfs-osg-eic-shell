@@ -40,11 +40,24 @@ inputs:
     description: 'Apptainer version to use (e.g. v1.1.3 or latest)'
     required: false
     default: 'v1.1.3'
+  apptainer_deb_cache:
+    description: 'Location (directory) of the cached apptainer deb.'
+    required: false
+    default: 'apptainer_deb_cache'
 
 runs:
   using: "composite"
   steps:
-    - run: |
+    - name: Restore cached apptainer package
+      id: cache-restore
+      uses: actions/cache@v4
+      with:
+        key: apptainer-deb-cache-${{ inputs.apptainer_version }}
+        path: |
+          ${{ inputs.apptainer_deb_cache }}
+    - name: Run inside eic-shell
+      id: run-eic-shell
+      run: |
         ${{ github.action_path }}/setup-eic-shell.sh
       shell: bash
       env:
@@ -58,4 +71,12 @@ runs:
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
         NETWORK_TYPES: ${{ inputs.network_types }}
+        APPTAINER_DEB_CACHE: ${{ inputs.apptainer_deb_cache }}
         APPTAINER_VERSION: ${{ inputs.apptainer_version }}
+    - name: Store apptainer package to cache
+      uses: actions/cache/save@v4
+      if: steps.run-eic-shell.outputs.cache-update == 'true'      
+      with:
+        key: apptainer-deb-cache-${{ inputs.apptainer_version }}
+        path: |
+          ${{ inputs.apptainer_deb_cache }}
