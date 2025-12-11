@@ -32,10 +32,6 @@ inputs:
     description: 'Custom path where the sandbox is located'
     required: false
     default: ''
-  network_types:
-    description: 'Network access types inside EIC shell'
-    required: false
-    default: 'bridge'
   apptainer_version:
     description: 'Apptainer version to use (e.g. v1.4.5 or latest)'
     required: false
@@ -70,7 +66,6 @@ runs:
         RUN: ${{ inputs.run }}
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
-        NETWORK_TYPES: ${{ inputs.network_types }}
         APPTAINER_DEB_CACHE: ${{ inputs.apptainer_deb_cache }}
         APPTAINER_VERSION: ${{ inputs.apptainer_version }}
     - name: Store apptainer package to cache
