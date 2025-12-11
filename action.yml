@@ -55,7 +55,6 @@ runs:
         key: apptainer-deb-cache-${{ inputs.apptainer_version }}
         path: |
           ${{ inputs.apptainer_deb_cache }}
-        save-always: true
     - name: Run inside eic-shell
       id: run-eic-shell
       run: |
@@ -78,6 +77,6 @@ runs:
       uses: actions/cache/save@v4
       if: steps.run-eic-shell.outputs.cache-update == 'true'      
       with:
-        key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+        key: apptainer-deb-cache-${{ inputs.apptainer_version }}
         path: |
           ${{ inputs.apptainer_deb_cache }}
