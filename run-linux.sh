@@ -71,7 +71,7 @@ if apptainer instance list | grep ${worker} ; then
   echo "Reusing exisitng Apptainer image from ${SANDBOX_PATH}"
  else
   echo "Starting Apptainer image from ${SANDBOX_PATH}"
-  apptainer instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} --network ${NETWORK_TYPES:-bridge} ${SANDBOX_PATH} ${worker}
+  apptainer instance start --bind /cvmfs --bind ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} ${SANDBOX_PATH} ${worker}
 fi
 
 echo "####################################################################"
