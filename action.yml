@@ -53,6 +53,7 @@ runs:
         key: apptainer-deb-cache-${{ inputs.apptainer_version }}
         path: |
           ${{ inputs.apptainer_deb_cache }}
+        save-always: true
     - run: |
         ${{ github.action_path }}/setup-eic-shell.sh
       shell: bash
