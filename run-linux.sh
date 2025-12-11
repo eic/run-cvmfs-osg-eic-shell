@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-
-set -e
+set -Euo pipefail
+trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+IFS=$'\n\t'
 
 echo "::group::Checking if there is a working CVMFS mount"
 
@@ -53,8 +54,13 @@ fi
 
 echo "::group::Installing Apptainer ${v}"
 for deb in "apptainer_${v/v/}_amd64.deb" "apptainer-suid_${v/v/}_amd64.deb"; do
-  sudo wget --tries 5 --quiet --timestamping --output-document /var/cache/apt/archives/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
+  mkdir -p ${APPTAINER_DEB_CACHE}
+  if [ ! -s ${APPTAINER_DEB_CACHE}/${deb} ] ; then
+    wget --tries 5 --output-document ${APPTAINER_DEB_CACHE}/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
+    echo "cache-update=true" >> $GITHUB_OUTPUT
+  fi
   sudo rm -f /var/lib/man-db/auto-update
+  sudo cp ${APPTAINER_DEB_CACHE}/${deb} /var/cache/apt/archives/${deb}
   sudo apt-get -q -y install /var/cache/apt/archives/${deb}
   sudo touch /var/lib/man-db/auto-update
 done
