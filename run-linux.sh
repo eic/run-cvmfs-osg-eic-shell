@@ -57,6 +57,7 @@ for deb in "apptainer_${v/v/}_amd64.deb" "apptainer-suid_${v/v/}_amd64.deb"; do
   mkdir -p ${APPTAINER_DEB_CACHE}
   if [ ! -s ${APPTAINER_DEB_CACHE}/${deb} ] ; then
     wget --tries 5 --output-document ${APPTAINER_DEB_CACHE}/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
+    echo "cache-update=true" >> $GITHUB_OUTPUT
   fi
   sudo rm -f /var/lib/man-db/auto-update
   sudo cp ${APPTAINER_DEB_CACHE}/${deb} /var/cache/apt/archives/${deb}
