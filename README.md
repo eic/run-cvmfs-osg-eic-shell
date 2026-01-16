@@ -30,6 +30,8 @@ jobs:
 ```
 In this case the action will automatically resolve the correct container image (in this case `eic_xl:nightly`) and spawn an instance with Singularity from `/cvmfs/singularity.opensciencegrid.org/`.
 
+If the requested container image is not found on CVMFS, the action will automatically fall back to using a Docker container from `ghcr.io/{organization}/{platform}:{release}`. This allows for transparent testing of containers that have not yet been published to CVMFS.
+
 The action mounts the checkout directory into the mentioned container and wraps the variable `run` in the script:
 
 ```sh
@@ -68,3 +70,19 @@ There are minimal examples, which are also workflows in this repository in the s
 ## Limitations
 
 The action will always resolve the correct image to execute your code on top the requested view, therefore you must always set the top level GitHub Action variable `runs-on: ubuntu-latest`.
+
+## Docker Fallback
+
+When a requested `platform-release` is not found on CVMFS, the action automatically falls back to using Docker containers from GitHub Container Registry (ghcr.io). This feature enables:
+
+- Testing containers that are not yet published to CVMFS
+- Using custom container builds during development
+- Seamless workflow execution without code changes
+
+The Docker fallback:
+- Pulls images from `ghcr.io/{organization}/{platform}:{release}`
+- Creates persistent containers that are reused across multiple action invocations (similar to Apptainer instances)
+- Runs containers with the same user permissions as the host to avoid file ownership issues
+- Requires no changes to your workflow files
+
+Both CVMFS and Docker fallback modes provide the same execution environment for your payload code.

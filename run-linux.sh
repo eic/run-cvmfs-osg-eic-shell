@@ -24,8 +24,11 @@ fi
 echo "Full EIC shell path is ${SANDBOX_PATH}"
 
 if [ ! -d "${SANDBOX_PATH}" ]; then
-  echo "Did not find an EIC shell under this path!"
-  exit 1
+  echo "Did not find an EIC shell under this path: ${SANDBOX_PATH}"
+  echo "Falling back to Docker container from ghcr.io"
+  USE_DOCKER=true
+else
+  USE_DOCKER=false
 fi
 
 echo "#!/usr/bin/env bash
@@ -40,6 +43,61 @@ ${SETUP:+source ${SETUP}}
 ${RUN}
 " > ${GITHUB_WORKSPACE}/action_payload.sh
 chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
+
+if [ "${USE_DOCKER}" = "true" ]; then
+  # Use Docker fallback
+  DOCKER_IMAGE="ghcr.io/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM_RELEASE}"
+  if [[ -n "${EIC_SHELL_RELEASE-}" ]]; then
+    DOCKER_IMAGE="ghcr.io/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
+  fi
+  echo "Using Docker image: ${DOCKER_IMAGE}"
+  
+  # Create a persistent container name based on the image (truncate hash to 12 chars)
+  CONTAINER_NAME="eic-$(echo "${DOCKER_IMAGE}" | sha256sum | awk '{print substr($1,1,12)}')"
+  
+  # Check if container already exists
+  if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "Reusing existing Docker container: ${CONTAINER_NAME}"
+    # Start the container if it's not running
+    if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+      echo "Starting stopped container..."
+      if ! docker start ${CONTAINER_NAME}; then
+        echo "ERROR: Failed to start Docker container ${CONTAINER_NAME}"
+        exit 1
+      fi
+    fi
+  else
+    echo "Creating new Docker container: ${CONTAINER_NAME}"
+    # Create and start the container
+    # Keep it running with tail -f /dev/null
+    # Run as current user to avoid permission issues
+    # Mount /cvmfs if available (will be empty dir if not available)
+    if ! docker run -d \
+      --name ${CONTAINER_NAME} \
+      --user $(id -u):$(id -g) \
+      -v /cvmfs:/cvmfs \
+      -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
+      -w ${GITHUB_WORKSPACE} \
+      ${DOCKER_IMAGE} \
+      tail -f /dev/null; then
+      echo "ERROR: Failed to create and start Docker container from ${DOCKER_IMAGE}"
+      echo "Make sure the image exists at ghcr.io and is accessible"
+      exit 1
+    fi
+  fi
+  
+  echo "####################################################################"
+  echo "###################### Executing user payload ######################"
+  echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+  
+  # Execute the payload in the container
+  if ! docker exec ${CONTAINER_NAME} /bin/bash ${GITHUB_WORKSPACE}/action_payload.sh; then
+    echo "ERROR: Failed to execute payload in Docker container"
+    exit 1
+  fi
+  
+  exit 0
+fi
 
 if [[ ${APPTAINER_VERSION} == "latest" ]] ; then
   v=$(curl -sL --retry 5 https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
