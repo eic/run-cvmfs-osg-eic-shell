@@ -35,7 +35,7 @@ jobs:
         platform-release: ${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}
         run: |
           echo "Testing Docker fallback functionality"
-          echo "Using ghcr.io/${{ github.event.inputs.organization || 'eic' }}/${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}"
+          echo "Using organization '${{ github.event.inputs.organization || 'eic' }}' with platform-release '${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}' on ghcr.io"
           which bash
           pwd
   
