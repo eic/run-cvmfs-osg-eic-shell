@@ -68,9 +68,11 @@ if [ "${USE_DOCKER}" = "true" ]; then
     # Create and start the container
     # Keep it running with tail -f /dev/null
     # Run as current user to avoid permission issues
+    # Mount /cvmfs if available (will be empty dir if not available)
     if ! docker run -d \
       --name ${CONTAINER_NAME} \
       --user $(id -u):$(id -g) \
+      -v /cvmfs:/cvmfs \
       -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
       -w ${GITHUB_WORKSPACE} \
       ${DOCKER_IMAGE} \
