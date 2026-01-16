@@ -58,20 +58,27 @@ if [ "${USE_DOCKER}" = "true" ]; then
     # Start the container if it's not running
     if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
       echo "Starting stopped container..."
-      docker start ${CONTAINER_NAME}
+      if ! docker start ${CONTAINER_NAME}; then
+        echo "ERROR: Failed to start Docker container ${CONTAINER_NAME}"
+        exit 1
+      fi
     fi
   else
     echo "Creating new Docker container: ${CONTAINER_NAME}"
     # Create and start the container
     # Keep it running with tail -f /dev/null
     # Run as current user to avoid permission issues
-    docker run -d \
+    if ! docker run -d \
       --name ${CONTAINER_NAME} \
       --user $(id -u):$(id -g) \
       -v ${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE} \
       -w ${GITHUB_WORKSPACE} \
       ${DOCKER_IMAGE} \
-      tail -f /dev/null
+      tail -f /dev/null; then
+      echo "ERROR: Failed to create and start Docker container from ${DOCKER_IMAGE}"
+      echo "Make sure the image exists at ghcr.io and is accessible"
+      exit 1
+    fi
   fi
   
   echo "####################################################################"
@@ -79,8 +86,10 @@ if [ "${USE_DOCKER}" = "true" ]; then
   echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
   
   # Execute the payload in the container
-  # The set -e in the script will cause docker exec to fail if the payload fails
-  docker exec ${CONTAINER_NAME} /bin/bash ${GITHUB_WORKSPACE}/action_payload.sh
+  if ! docker exec ${CONTAINER_NAME} /bin/bash ${GITHUB_WORKSPACE}/action_payload.sh; then
+    echo "ERROR: Failed to execute payload in Docker container"
+    exit 1
+  fi
   
   exit 0
 fi
