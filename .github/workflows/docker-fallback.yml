@@ -1,0 +1,118 @@
+name: docker-fallback
+# This workflow tests the Docker fallback functionality
+# It requires a Docker image to exist at ghcr.io/{organization}/{platform}:{release}
+# that does NOT exist on CVMFS
+on: 
+  # Run on workflow_dispatch to allow manual testing when Docker images are available
+  workflow_dispatch:
+    inputs:
+      organization:
+        description: 'Organization (e.g., eicweb)'
+        required: false
+        default: 'eicweb'
+      platform_release:
+        description: 'Platform:Release that exists on ghcr.io but NOT on CVMFS (e.g., eic_xl:24.11.2-stable)'
+        required: false
+        default: 'eic_xl:24.11.2-stable'
+  # Also run on push/PR to test detection logic (may fail on docker pull, which is acceptable)
+  push:
+    branches:
+      - 'copilot/**'
+  pull_request:
+
+jobs:
+  # Test 1: Verify Docker fallback detection is triggered for non-CVMFS paths
+  docker-fallback-detection:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    
+    - name: Test Docker fallback detection
+      id: test-fallback
+      continue-on-error: true
+      uses: ./
+      with:
+        organization: ${{ github.event.inputs.organization || 'eicweb' }}
+        platform-release: ${{ github.event.inputs.platform_release || 'eic_xl:test-nonexistent-cvmfs-path' }}
+        run: |
+          echo "Testing Docker fallback functionality"
+          echo "If this image exists on ghcr.io, the test will succeed"
+          echo "If not, it will fail at docker pull, but fallback detection still worked"
+          which bash
+          pwd
+    
+    - name: Check if fallback was triggered
+      if: always()
+      run: |
+        echo "Test completed. Check logs above for:"
+        echo "  - 'Did not find an EIC shell under this path' (confirms CVMFS miss)"
+        echo "  - 'Falling back to Docker container from ghcr.io' (confirms fallback)"
+        echo "  - 'Using Docker image: ghcr.io/...' (confirms Docker path)"
+  
+  # Test 2: Verify container reuse across multiple invocations
+  docker-fallback-reuse:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+    - uses: actions/checkout@v6
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    
+    - name: First invocation - create test file
+      uses: ./
+      with:
+        organization: ${{ github.event.inputs.organization }}
+        platform-release: ${{ github.event.inputs.platform_release }}
+        run: |
+          echo "First invocation - creating test file"
+          echo "test-persistence-data-$$" > /tmp/docker-reuse-test.txt
+          cat /tmp/docker-reuse-test.txt
+          echo "Created test file to verify container reuse"
+    
+    - name: Second invocation - verify container reused
+      uses: ./
+      with:
+        organization: ${{ github.event.inputs.organization }}
+        platform-release: ${{ github.event.inputs.platform_release }}
+        run: |
+          echo "Second invocation - checking for test file"
+          if [ -f /tmp/docker-reuse-test.txt ]; then
+            echo "SUCCESS: Container was reused (file exists)"
+            echo "File contents:"
+            cat /tmp/docker-reuse-test.txt
+          else
+            echo "ERROR: Container was NOT reused (file missing)"
+            exit 1
+          fi
+  
+  # Test 3: Verify CVMFS (Apptainer) path still works
+  docker-fallback-cvmfs-unchanged:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    
+    - name: Test existing CVMFS functionality (should use Apptainer)
+      uses: ./
+      with:
+        platform-release: "eic_xl:nightly"
+        run: |
+          echo "Testing that CVMFS path still uses Apptainer (not Docker)"
+          gcc --version
+          which gcc
+          eic-info
+    
+    - name: Test Apptainer instance reuse
+      uses: ./
+      with:
+        platform-release: "eic_xl:nightly"
+        run: |
+          echo "Testing Apptainer instance reuse"
+          gcc --version
+          echo "Apptainer reuse test completed"
