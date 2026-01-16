@@ -35,17 +35,9 @@ jobs:
         platform-release: ${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}
         run: |
           echo "Testing Docker fallback functionality"
-          echo "Using ghcr.io/eic/eic_cvmfs:nightly which exists on ghcr.io but not on CVMFS"
+          echo "Using ghcr.io/${{ github.event.inputs.organization || 'eic' }}/${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}"
           which bash
           pwd
-    
-    - name: Check if fallback was triggered
-      if: always()
-      run: |
-        echo "Test completed. Check logs above for:"
-        echo "  - 'Did not find an EIC shell under this path' (confirms CVMFS miss)"
-        echo "  - 'Falling back to Docker container from ghcr.io' (confirms fallback)"
-        echo "  - 'Using Docker image: ghcr.io/...' (confirms Docker path)"
   
   # Test 2: Verify container reuse across multiple invocations
   docker-fallback-reuse:
