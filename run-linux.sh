@@ -46,7 +46,10 @@ chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
 
 if [ "${USE_DOCKER}" = "true" ]; then
   # Use Docker fallback
-  DOCKER_IMAGE="ghcr.io/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
+  DOCKER_IMAGE="ghcr.io/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM_RELEASE}"
+  if [[ -n "${EIC_SHELL_RELEASE-}" ]]; then
+    DOCKER_IMAGE="ghcr.io/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
+  fi
   echo "Using Docker image: ${DOCKER_IMAGE}"
   
   # Create a persistent container name based on the image (truncate hash to 12 chars)
