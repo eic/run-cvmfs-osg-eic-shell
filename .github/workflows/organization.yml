@@ -10,6 +10,7 @@ jobs:
         cvmfs_repositories: 'singularity.opensciencegrid.org'
     - uses: ./
       with:
+        repository: "singularity.opensciencegrid.org"
         organization: "eicweb"
         platform-release: "eic_xl:25.04.0-stable"
         apptainer_version: "v1.1.2"
