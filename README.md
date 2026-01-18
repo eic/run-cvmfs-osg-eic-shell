@@ -50,6 +50,7 @@ which is executed in the container and thus giving the user an easy and direct a
 
 ### Parameters
 The following parameters are supported:
+ - `repository`: CVMFS repository you are targeting (e.g. `singularity.opensciencegrid.org`)
  - `organization`: EIC shell organization you are targeting (e.g. `eic`)
  - `platform`: EIC shell platform you are targeting (e.g. `eic_xl`)
  - `release`: EIC shell release you are targeting (e.g. `3.0-stable`)
