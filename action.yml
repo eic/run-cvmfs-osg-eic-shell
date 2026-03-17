@@ -67,7 +67,7 @@ runs:
         EIC_SHELL_RELEASE: ${{ inputs.release }}
         EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
         EIC_SHELL_PLATFORM: ${{ inputs.platform }}
-        CVMFS_PREFIX: ${{ inputs.cvmfs-prefix }}
+        EIC_SHELL_CVMFS_PREFIX: ${{ inputs.cvmfs-prefix }}
         RUN: ${{ inputs.run }}
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
