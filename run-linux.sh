@@ -3,10 +3,13 @@ set -Euo pipefail
 trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 IFS=$'\n\t'
 
+# Backwards-compatible default if env not set for some reason
+: "${CVMFS_PREFIX:=/cvmfs/singularity.opensciencegrid.org}"
+
 echo "::group::Checking if there is a working CVMFS mount"
 
-if [ ! -d "/cvmfs/singularity.opensciencegrid.org" ]; then
-  echo "The directory /cvmfs/singularity.opensciencegrid.org cannot be accessed!"
+if [ ! -d "${CVMFS_PREFIX}" ]; then
+  echo "The directory ${CVMFS_PREFIX} cannot be accessed!"
   echo "Make sure you are using the cvmfs-contrib/github-action-cvmfs@v2 action"
   exit 1
 fi
@@ -15,9 +18,9 @@ echo "CVMFS mount present"
 echo "::endgroup::"
 
 if [ -z "${SANDBOX_PATH}" ]; then
-  SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM_RELEASE}"
+  SANDBOX_PATH="${CVMFS_PREFIX}/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM_RELEASE}"
   if [[ "${EIC_SHELL_RELEASE}" == *"dev"* ]]; then
-    SANDBOX_PATH="/cvmfs/singularity.opensciencegrid.org/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
+    SANDBOX_PATH="${CVMFS_PREFIX}/${EIC_SHELL_ORGANIZATION}/${EIC_SHELL_PLATFORM}:${EIC_SHELL_RELEASE}"
   fi
 fi
 
