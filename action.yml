@@ -20,6 +20,10 @@ inputs:
     description: 'EIC shell release platform string you are targeting (e.g. eic_xl:24.11.2-stable)'
     required: false
     default: ''
+  cvmfs-prefix:
+    description: 'Base CVMFS path prefix containing EIC shell images (default: /cvmfs/singularity.opensciencegrid.org)'
+    required: false
+    default: '/cvmfs/singularity.opensciencegrid.org'
   run:
     description: 'They payload code you want to execute on top of the view'
     required: false
@@ -63,6 +67,7 @@ runs:
         EIC_SHELL_RELEASE: ${{ inputs.release }}
         EIC_SHELL_PLATFORM_RELEASE: ${{ inputs.platform-release }}
         EIC_SHELL_PLATFORM: ${{ inputs.platform }}
+        EIC_SHELL_CVMFS_PREFIX: ${{ inputs.cvmfs-prefix }}
         RUN: ${{ inputs.run }}
         SETUP: ${{ inputs.setup }}
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
