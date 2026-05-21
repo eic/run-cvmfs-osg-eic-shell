@@ -1,5 +1,8 @@
 name: linux
 on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+  actions: write
 jobs:
   singularity:
     runs-on: ubuntu-latest
