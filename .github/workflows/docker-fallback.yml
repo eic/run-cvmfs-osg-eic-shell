@@ -1,0 +1,76 @@
+name: docker-fallback
+# This workflow tests the Docker fallback functionality
+# It uses ghcr.io/eic/eic_cvmfs:nightly which exists on ghcr.io but NOT on CVMFS
+on: 
+  # Run on workflow_dispatch to allow manual testing when Docker images are available
+  workflow_dispatch:
+    inputs:
+      organization:
+        description: 'Organization (e.g., eic)'
+        required: false
+        default: 'eic'
+      platform_release:
+        description: 'Platform:Release that exists on ghcr.io but NOT on CVMFS (e.g., eic_cvmfs:nightly)'
+        required: false
+        default: 'eic_cvmfs:nightly'
+  # Also run on push/PR to test detection logic
+  push:
+  pull_request:
+
+jobs:
+  # Test 1: Verify Docker fallback detection is triggered for non-CVMFS paths
+  docker-fallback-detection:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    
+    - name: Test Docker fallback detection
+      id: test-fallback
+      uses: ./
+      with:
+        organization: ${{ github.event.inputs.organization || 'eic' }}
+        platform-release: ${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}
+        run: |
+          echo "Testing Docker fallback functionality"
+          echo "Using organization '${{ github.event.inputs.organization || 'eic' }}' with platform-release '${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}' on ghcr.io"
+          which bash
+          pwd
+  
+  # Test 2: Verify container reuse across multiple invocations
+  docker-fallback-reuse:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
+      with:
+        cvmfs_repositories: 'singularity.opensciencegrid.org'
+    
+    - name: First invocation - create test file
+      uses: ./
+      with:
+        organization: ${{ github.event.inputs.organization || 'eic' }}
+        platform-release: ${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}
+        run: |
+          echo "First invocation - creating test file"
+          echo "test-persistence-data-$$" > /tmp/docker-reuse-test.txt
+          cat /tmp/docker-reuse-test.txt
+          echo "Created test file to verify container reuse"
+    
+    - name: Second invocation - verify container reused
+      uses: ./
+      with:
+        organization: ${{ github.event.inputs.organization || 'eic' }}
+        platform-release: ${{ github.event.inputs.platform_release || 'eic_cvmfs:nightly' }}
+        run: |
+          echo "Second invocation - checking for test file"
+          if [ -f /tmp/docker-reuse-test.txt ]; then
+            echo "SUCCESS: Container was reused (file exists)"
+            echo "File contents:"
+            cat /tmp/docker-reuse-test.txt
+          else
+            echo "ERROR: Container was NOT reused (file missing)"
+            exit 1
+          fi
