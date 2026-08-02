@@ -58,7 +58,7 @@ The following parameters are supported:
  - `setup`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/epic-main/bin/thisepic.sh`)
  - `sandbox-path`: Path where the setup script for the custom view is location. By specifying this variable the auto-resolving of the view based on `release` and `platform` is disabled.
  - `cvmfs-prefix`: Base CVMFS path prefix containing EIC shell images (defaults to `/cvmfs/singularity.opensciencegrid.org`).
- - `apptainer_version`: Apptainer version to use. Defaults to `latest`, but can be any version such as `v1.4.5`.
+ - `apptainer_version`: Apptainer version to use. Defaults to `v1.5.3`, but can be any version.
 
 Please be aware that you must use the combination of parameters `release` and `platform` together or use just the variable `platform-release` alone. These two options are given to enable more flexibility for the user to form their workflow with matrix expressions.
 
