@@ -44,16 +44,7 @@ ${RUN}
 " > ${GITHUB_WORKSPACE}/action_payload.sh
 chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
 
-if [[ ${APPTAINER_VERSION} == "latest" ]] ; then
-  v=$(curl -sL --retry 5 https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
-  # the curl above is fragile, so retry until successful
-  while [[ ${v} == "null" ]] ; do
-    sleep 5
-    v=$(curl -sL --retry 5 https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
-  done
-else
-  v=${APPTAINER_VERSION}
-fi
+v=${APPTAINER_VERSION}
 
 echo "::group::Installing Apptainer ${v}"
 for deb in "apptainer_${v/v/}_amd64.deb" "apptainer-suid_${v/v/}_amd64.deb"; do
