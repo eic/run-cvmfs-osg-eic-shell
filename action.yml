@@ -62,11 +62,17 @@ runs:
           v="${{ inputs.apptainer_version }}"
         fi
         echo "apptainer_version=${v}" >> $GITHUB_OUTPUT
+        # Debian 13+ / Ubuntu 25.10+ need the "-trixie+" debs (libfuse3-4, libsubid5)
+        if apt-cache show libfuse3-4 &>/dev/null ; then
+          echo "apptainer_deb_suffix=-trixie+" >> $GITHUB_OUTPUT
+        else
+          echo "apptainer_deb_suffix=" >> $GITHUB_OUTPUT
+        fi
     - name: Restore cached apptainer package
       id: cache-restore
       uses: actions/cache@v6
       with:
-        key: apptainer-deb-cache-${{ steps.resolve-apptainer-version.outputs.apptainer_version }}
+        key: apptainer-deb-cache-${{ steps.resolve-apptainer-version.outputs.apptainer_version }}${{ steps.resolve-apptainer-version.outputs.apptainer_deb_suffix }}
         path: |
           ${{ inputs.apptainer_deb_cache }}
     - name: Run inside eic-shell
@@ -87,10 +93,11 @@ runs:
         SANDBOX_PATH: ${{ inputs.sandbox-path }}
         APPTAINER_DEB_CACHE: ${{ inputs.apptainer_deb_cache }}
         APPTAINER_VERSION: ${{ steps.resolve-apptainer-version.outputs.apptainer_version }}
+        APPTAINER_DEB_SUFFIX: ${{ steps.resolve-apptainer-version.outputs.apptainer_deb_suffix }}
     - name: Store apptainer package to cache
       uses: actions/cache/save@v6
       if: steps.run-eic-shell.outputs.cache-update == 'true'      
       with:
-        key: apptainer-deb-cache-${{ steps.resolve-apptainer-version.outputs.apptainer_version }}
+        key: apptainer-deb-cache-${{ steps.resolve-apptainer-version.outputs.apptainer_version }}${{ steps.resolve-apptainer-version.outputs.apptainer_deb_suffix }}
         path: |
           ${{ inputs.apptainer_deb_cache }}
