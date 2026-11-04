@@ -45,9 +45,10 @@ ${RUN}
 chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
 
 v=${APPTAINER_VERSION}
+s=${APPTAINER_DEB_SUFFIX:-}
 
 echo "::group::Installing Apptainer ${v}"
-for deb in "apptainer_${v/v/}_amd64.deb" "apptainer-suid_${v/v/}_amd64.deb"; do
+for deb in "apptainer_${v/v/}${s}_amd64.deb" "apptainer-suid_${v/v/}${s}_amd64.deb"; do
   mkdir -p ${APPTAINER_DEB_CACHE}
   if [ ! -s ${APPTAINER_DEB_CACHE}/${deb} ] ; then
     wget --tries 5 --output-document ${APPTAINER_DEB_CACHE}/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
