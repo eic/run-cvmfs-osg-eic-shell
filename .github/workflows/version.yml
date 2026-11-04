@@ -13,7 +13,7 @@ jobs:
     - uses: ./
       with:
         platform-release: "eic_xl:nightly"
-        apptainer_version: "v1.1.2"
+        apptainer_version: "latest"
         run: |
           gcc --version
           which gcc

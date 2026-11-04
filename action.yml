@@ -62,12 +62,19 @@ runs:
           v="${{ inputs.apptainer_version }}"
         fi
         echo "apptainer_version=${v}" >> $GITHUB_OUTPUT
-        # Debian 13+ / Ubuntu 25.10+ need the "-trixie+" debs (libfuse3-4, libsubid5)
+        # Debian 13+ / Ubuntu 25.10+ (libfuse3-4, libsubid5) need the "-trixie+" debs,
+        # which are only published for apptainer >= v1.4.2. Before v1.3.0 the plain debs
+        # use libfuse2 and install anywhere; v1.3.0 to v1.4.1 require libfuse3-3.
+        s=""
         if apt-cache show libfuse3-4 &>/dev/null ; then
-          echo "apptainer_deb_suffix=-trixie+" >> $GITHUB_OUTPUT
-        else
-          echo "apptainer_deb_suffix=" >> $GITHUB_OUTPUT
+          if dpkg --compare-versions "${v#v}" ge 1.4.2 ; then
+            s="-trixie+"
+          elif dpkg --compare-versions "${v#v}" ge 1.3.0 ; then
+            echo "::error::Apptainer ${v} requires libfuse3-3, which is not available on this runner ($(. /etc/os-release && echo ${PRETTY_NAME})). Use apptainer_version >= v1.4.2 (or < v1.3.0), or an older runner image."
+            exit 1
+          fi
         fi
+        echo "apptainer_deb_suffix=${s}" >> $GITHUB_OUTPUT
     - name: Restore cached apptainer package
       id: cache-restore
       uses: actions/cache@v6

@@ -14,7 +14,7 @@ jobs:
       with:
         organization: "eicweb"
         platform-release: "eic_xl:25.04.0-stable"
-        apptainer_version: "v1.1.2"
+        apptainer_version: "latest"
         run: |
           gcc --version
           which gcc
