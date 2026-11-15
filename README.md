@@ -58,7 +58,9 @@ The following parameters are supported:
  - `setup`: Initialization/Setup script for a view that sets the environment (e.g. `/opt/detector/epic-main/bin/thisepic.sh`)
  - `sandbox-path`: Path where the setup script for the custom view is location. By specifying this variable the auto-resolving of the view based on `release` and `platform` is disabled.
  - `cvmfs-prefix`: Base CVMFS path prefix containing EIC shell images (defaults to `/cvmfs/singularity.opensciencegrid.org`).
- - `apptainer_version`: Apptainer version to use. Defaults to `latest`. On Debian 13+ / Ubuntu 25.10+ runners (e.g. `ubuntu-26.04`), versions v1.3.0 through v1.4.1 are not supported, since they require `libfuse3-3`.
+ - `apptainer_version`: Apptainer version to use. Defaults to `latest`. On Debian 13+ / Ubuntu 25.10+ runners (e.g. `ubuntu-26.04`), versions v1.3.0 through v1.4.1 are not supported, since they require `libfuse3-3`. If Apptainer is already installed on the runner (e.g. by an earlier use of this action in the same job) and matches the requested version (any version for `latest`), it is reused and not reinstalled.
+ - `apptainer_deb_cache`: Directory in which the Apptainer `.deb` packages are cached (defaults to `apptainer_deb_cache`).
+ - `token`: GitHub token used to query the GitHub API for the latest Apptainer release (defaults to `${{ github.token }}`). Authenticated requests avoid the 60 requests/hour limit that applies to unauthenticated requests from shared runner IP addresses.
 
 Please be aware that you must use the combination of parameters `release` and `platform` together or use just the variable `platform-release` alone. These two options are given to enable more flexibility for the user to form their workflow with matrix expressions.
 

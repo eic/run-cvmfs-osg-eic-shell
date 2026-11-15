@@ -47,19 +47,23 @@ chmod a+x ${GITHUB_WORKSPACE}/action_payload.sh
 v=${APPTAINER_VERSION}
 s=${APPTAINER_DEB_SUFFIX:-}
 
-echo "::group::Installing Apptainer ${v}"
-for deb in "apptainer_${v/v/}${s}_amd64.deb" "apptainer-suid_${v/v/}${s}_amd64.deb"; do
-  mkdir -p ${APPTAINER_DEB_CACHE}
-  if [ ! -s ${APPTAINER_DEB_CACHE}/${deb} ] ; then
-    wget --tries 5 --output-document ${APPTAINER_DEB_CACHE}/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
-    echo "cache-update=true" >> $GITHUB_OUTPUT
-  fi
-  sudo rm -f /var/lib/man-db/auto-update
-  sudo cp ${APPTAINER_DEB_CACHE}/${deb} /var/cache/apt/archives/${deb}
-  sudo apt-get -q -y install /var/cache/apt/archives/${deb}
-  sudo touch /var/lib/man-db/auto-update
-done
-echo "::endgroup::"
+if [ "${APPTAINER_INSTALLED:-false}" == "true" ]; then
+  echo "Apptainer ${v} already installed, skipping installation"
+else
+  echo "::group::Installing Apptainer ${v}"
+  for deb in "apptainer_${v/v/}${s}_amd64.deb" "apptainer-suid_${v/v/}${s}_amd64.deb"; do
+    mkdir -p ${APPTAINER_DEB_CACHE}
+    if [ ! -s ${APPTAINER_DEB_CACHE}/${deb} ] ; then
+      wget --tries 5 --output-document ${APPTAINER_DEB_CACHE}/${deb} https://github.com/apptainer/apptainer/releases/download/${v}/${deb}
+      echo "cache-update=true" >> $GITHUB_OUTPUT
+    fi
+    sudo rm -f /var/lib/man-db/auto-update
+    sudo cp ${APPTAINER_DEB_CACHE}/${deb} /var/cache/apt/archives/${deb}
+    sudo apt-get -q -y install /var/cache/apt/archives/${deb}
+    sudo touch /var/lib/man-db/auto-update
+  done
+  echo "::endgroup::"
+fi
 
 worker=$(echo ${SANDBOX_PATH} | sha256sum | awk '{print$1}')
 if apptainer instance list | grep ${worker} ; then
