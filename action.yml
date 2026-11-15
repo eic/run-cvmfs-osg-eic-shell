@@ -44,6 +44,10 @@ inputs:
     description: 'Location (directory) of the cached apptainer deb.'
     required: false
     default: 'apptainer_deb_cache'
+  token:
+    description: 'GitHub token used to query the GitHub API for the latest Apptainer release (avoids unauthenticated rate limits)'
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: "composite"
@@ -51,16 +55,51 @@ runs:
     - name: Resolve Apptainer version
       id: resolve-apptainer-version
       shell: bash
+      env:
+        APPTAINER_VERSION_INPUT: ${{ inputs.apptainer_version }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-        if [[ "${{ inputs.apptainer_version }}" == "latest" ]] ; then
-          v=$(curl -sL --retry 5 https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
-          while [[ ${v} == "null" ]] ; do
-            sleep 5
-            v=$(curl -sL --retry 5 https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name")
-          done
-        else
-          v="${{ inputs.apptainer_version }}"
+        # Reuse an Apptainer that is already installed (e.g. by an earlier use of
+        # this action in the same job) if it satisfies the requested version.
+        if command -v apptainer &>/dev/null ; then
+          installed="v$(apptainer --version | awk '{print $NF}')"
+          if [[ "${APPTAINER_VERSION_INPUT}" == "latest" || "${APPTAINER_VERSION_INPUT#v}" == "${installed#v}" ]] ; then
+            echo "Apptainer ${installed} already installed, skipping installation"
+            echo "apptainer_version=${installed}" >> $GITHUB_OUTPUT
+            echo "apptainer_installed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "Apptainer ${installed} installed, but ${APPTAINER_VERSION_INPUT} requested"
         fi
+        echo "apptainer_installed=false" >> $GITHUB_OUTPUT
+        if [[ "${APPTAINER_VERSION_INPUT}" == "latest" ]] ; then
+          auth=()
+          if [[ -n "${GITHUB_TOKEN}" ]] ; then
+            auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+          fi
+          v=""
+          for attempt in 1 2 3 4 5 6 ; do
+            # GitHub REST API (authenticated: 1000 requests/hour/repository)
+            v=$(curl -sL --retry 3 "${auth[@]}" -H "Accept: application/vnd.github+json" \
+                  https://api.github.com/repos/apptainer/apptainer/releases/latest | jq -r ".tag_name // empty" || true)
+            # Fallback: the releases/latest web redirect, not subject to REST API rate limits
+            if [[ -z "${v}" ]] ; then
+              v=$(curl -sI --retry 3 -o /dev/null -w '%{redirect_url}' \
+                    https://github.com/apptainer/apptainer/releases/latest | sed -n 's|.*/releases/tag/||p' || true)
+            fi
+            [[ "${v}" =~ ^v[0-9] ]] && break
+            v=""
+            echo "Failed to resolve latest Apptainer version (attempt ${attempt}), retrying in $((attempt * 10)) s"
+            sleep $((attempt * 10))
+          done
+          if [[ -z "${v}" ]] ; then
+            echo "::error::Could not resolve the latest Apptainer version. Set the apptainer_version input to a fixed version (e.g. v1.5.5)."
+            exit 1
+          fi
+        else
+          v="${APPTAINER_VERSION_INPUT}"
+        fi
+        echo "Using Apptainer ${v}"
         echo "apptainer_version=${v}" >> $GITHUB_OUTPUT
         # Debian 13+ / Ubuntu 25.10+ (libfuse3-4, libsubid5) need the "-trixie+" debs,
         # which are only published for apptainer >= v1.4.2. Before v1.3.0 the plain debs
@@ -77,6 +116,7 @@ runs:
         echo "apptainer_deb_suffix=${s}" >> $GITHUB_OUTPUT
     - name: Restore cached apptainer package
       id: cache-restore
+      if: steps.resolve-apptainer-version.outputs.apptainer_installed != 'true'
       uses: actions/cache@v6
       with:
         key: apptainer-deb-cache-${{ steps.resolve-apptainer-version.outputs.apptainer_version }}${{ steps.resolve-apptainer-version.outputs.apptainer_deb_suffix }}
@@ -101,9 +141,10 @@ runs:
         APPTAINER_DEB_CACHE: ${{ inputs.apptainer_deb_cache }}
         APPTAINER_VERSION: ${{ steps.resolve-apptainer-version.outputs.apptainer_version }}
         APPTAINER_DEB_SUFFIX: ${{ steps.resolve-apptainer-version.outputs.apptainer_deb_suffix }}
+        APPTAINER_INSTALLED: ${{ steps.resolve-apptainer-version.outputs.apptainer_installed }}
     - name: Store apptainer package to cache
       uses: actions/cache/save@v6
-      if: steps.run-eic-shell.outputs.cache-update == 'true'      
+      if: steps.run-eic-shell.outputs.cache-update == 'true'
       with:
         key: apptainer-deb-cache-${{ steps.resolve-apptainer-version.outputs.apptainer_version }}${{ steps.resolve-apptainer-version.outputs.apptainer_deb_suffix }}
         path: |
